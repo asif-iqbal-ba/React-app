@@ -1,0 +1,202 @@
+Appwrite
+Appwrite ak backend Service ha
+1-Appwrite account
+	Free Tire
+2-tinymce
+3-React Hooks Form
+
+1-
+npm create vite@latest
+Give project Detail
+2 cd projectname/directory
+3 open vs code
+4 open terminal and type command
+npm i
+5 
+run commands
+npm i @reduxjs/toolkit react-redux react-router-dom appwrite @tinymce/tinymce-react html-react-parser react-hook-form
+
+Environment variables
+1-make .env file in project root directory
+2-Add .env file in git ignore file to block sending env file in production or to push on
+github publicly
+3-Define variables in .env file
+Ans:-if we make project in vite we must start variable name with vite
+	viteVariableName:value
+      if we make project by create-react-app then
+	REACT-APpVariableName: value
+4-How to access .env file's variable in our project
+	import.meta.evn.Vite____
+                  env.process.REACT-App---
+
+Vite
+       APPWRITURL
+       APPWRITEPROJECTID
+                         DATABASEID
+	        COLLECTIONID
+	        BUCKETID
+
+5-Environment variables acces in production grade project
+	Make a folder under src folder and give name
+	conf     Note:- we can give any name but best practice is to follow naming convention
+why are we doing so
+	because each time we write 
+		import.meta.env.VITE
+	is a  problematic thing 
+it may be possible many times envrionment variable be not load. This may crash application
+and it is too much difficult to find out error
+It may be possible many times we have numeric values while we should have env variables in string
+In conf file we use key value pairs in string mode
+
+6-Dependency indepent approach?
+It is called vendor lockin
+We should use an approach in which our application is independent of Backend platform
+our major code will work as it and we should only do some changes to up our application like 
+if we want to change  appWrite or any other plateform 
+Here is concept called services
+Services is only a file which communicate between front end and backend
+We make a folder name Appwrite
+in this folder we make a file auth.js
+
+following is the code to write auth service which provide by appwrite documentation
+
+import { Client, Account, ID } from "appwrite";
+
+const client = new Client()
+    .setEndpoint('https://cloud.appwrite.io/v1') // Your API Endpoint
+    .setProject('<PROJECT_ID>');               // Your project ID
+
+const account = new Account(client);
+
+const promise = account.create('[USER_ID]', 'email@example.com', '');
+
+promise.then(function (response) {
+    console.log(response); // Success
+}, function (error) {
+    console.log(error); // Failure
+});
+we change it slighty bit in a professional life code 
+
+--------------------------
+We import conf from conf file address
+Make a class having name 
+export class AuthServices{
+in this class we make 2 variables 
+    client = new Client;
+    account;
+Now we make a constructor in which we set client requirement and then
+make a new account  like below
+    constructor(){
+        this.client
+            .setEndpoint(conf.appWriteUrl)
+            .setProject(conf.appWriteProjectID);
+        this.account = new Account(this.client)
+    }
+}
+
+now we make new variable of AuthService and export it like below
+const authService = new AuthService
+export default authService
+
+Now we make an account
+
+async createAccount({email, password, name}){
+        try{
+            const userAccount = await this.account.create(ID.unique(), email, password, name)
+            if(userAccount){
+                // call another method
+            }
+            else{
+                return userAccount
+            }
+        }catch(error){
+            throw error
+        }
+    }
+Note if we change our services we should only change constructor 
+and things to other services like firebase etc
+Now we are making login method
+
+async login(email, password){
+        try{
+           return await this.account.createEmailPasswordSession(email, password)
+        }catch(error){
+            throw(error)
+        }
+    }
+
+---------------Redux Toolkit Configuration
+src k andar ak folder store k name se bana k hm ak file banate hn store.js
+or osi folder me hm ak or file banate hn jis me hm slice create krn ge
+
+store.js
+import {configureStore} from "@reduxjs/toolkit"
+import sliceName from "./sliceFileName"
+const store = configureStore({
+    reducer:{
+        yourVariableHame: sliceName,
+    }
+})
+export default store
+
+sliceFileName.js
+//ReduxToolkit se createSlice k function/method import krn
+import {createSlice} from "@reduxjs/toolkit" 
+//Initital state define krn
+//jo ak object hota ha is me jitni marzi key value de dn
+const initialState = {
+    key:value,
+    key:value,
+    .,
+    .,
+}
+//Phr hm slice create krn ge
+//Slice basically ak method ha jis andar ak object hota ha
+//jis me hm usually name, initialState or reducers k key dete hn
+//reducers k andar hm woh methods write krte hn jin se hm state ko update karte hn
+
+const yourSliceName= createSlice({
+    name: "YourName",
+    initialState,
+    reducers: {
+        methodName: (state, action)=>{
+            state.Key1 = value  //Note ye value hm directly b set kar sakte hn or action.payload se b sakte hn
+            state.Key2 = action.payload.Key
+        }
+        ,
+        MethodName2:(state)=>{
+            state.Key1 = false
+            state.Key2 = null
+        },
+        login: (state, action)=>{
+            state.status = ture
+            state.userData = action.payload.userData
+        }
+        ,
+        logout:(state)=>{
+            state.status = false
+            state.userData = null
+        }
+
+    }
+})
+
+phr hm inko export krn ge
+
+export const {methodName1,methodName2,login, logout} = yourSliceName.actions
+export default yourSliceName.reducer
+
+or in he ko hm use krte hn
+
+////////////Wraper banana
+//App.jsx or main.jsx me ja kar in 2 ko import krn
+
+import {Provider} from 'react-redux'
+import  store from './sotre/store.js'
+suppose krn k hm main.jsx me import krte hn to os me App ko Provider k wrap me dal dn ge
+<Provider store={store}>
+	<App />
+</Provider>
+
+ab hm useDispatch ki hook ki help se in methods ko kahi b call kr sakte hn
+or j se call hoga to state update ho jae gi

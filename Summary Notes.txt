@@ -1,0 +1,64 @@
+Simple History
+Redux and React Redux are 2 different theroies
+Redux is core liberary while React Redux is its implemantation
+React Redux is used to wiring/Connecting so that 
+Application can talk with each other
+When we use Redux toolkit then most of our work has been
+done
+start
+Firstly we create store 1 application has usually only 1 store
+but sometimes make more than 1 store but its not a good 
+practice.
+It is called single source of truth
+What is in store.js file
+only configureStore like below code
+import {configureStore} from '@reduxjs/toolkit';
+
+export const store = configureStore({
+	}
+in tutorial we have only 1 key pair but more than 1 key is possible
+Where will it take values?
+It takes values only from reducers. This is only way it takes
+values no other source it can take values.
+
+Therefore we will make reducers
+path/reducerFilesName.js in our example
+todoSlice.js
+Name is not considerable
+to make slice we we function createSlice
+To make a slice we need 3 things
+name:'sliceName'
+initialState:
+reducers:{
+	
+}
+import {createSlice, nanoid } from '@reduxjs/toolkit';
+const initialState = {
+    todos: [{id: 1, text: "Hello world"}]
+}
+export const todoSlice = createSlice({
+    name: 'todo',
+    initialState,
+    reducers: {
+        addTodo: (state, action) => {
+            const todo = {
+                id: nanoid(), 
+                text: action.payload
+            }
+            state.todos.push(todo)
+        },
+        removeTodo: (state, action) => {
+            state.todos = state.todos.filter((todo) => todo.id !== action.payload )
+        },
+    }
+})
+
+export const {addTodo, removeTodo} = todoSlice.actions
+export default todoSlice.reducer
+
+Tell all the reducers in it where form it take values
+Therefore code will be like
+import {configureStore} from '@reduxjs/toolkit';
+import {reducersName} from slicesfiles.js
+export const store = configureStore({
+	}
