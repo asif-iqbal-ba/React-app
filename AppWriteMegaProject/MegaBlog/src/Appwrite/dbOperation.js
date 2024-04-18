@@ -118,8 +118,11 @@ export class DBServices{
 
     getFilePreview(fileId){
         return this.bucket.getFilePreview(
-            conf.appwriteBucketId,
+            conf.appWriteBucketID,
             fileId
         )
     }
 }
+
+const service = new DBServices()
+export default service
